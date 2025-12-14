@@ -13,6 +13,16 @@ class DatabaseSettings(BaseModel):
     user: str
     password: str
 
+    @property
+    def url(self):
+        return "postgresql+asyncpg://{}:{}@{}:{}/{}".format(
+            self.user,
+            self.password,
+            self.host,
+            self.port,
+            self.db,
+        )
+
 
 class LoggSettings(BaseModel):
     level: str

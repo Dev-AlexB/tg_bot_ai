@@ -15,5 +15,5 @@ class LoggingMiddleware(BaseMiddleware):
         }
         if event.text:
             log_data["text"] = event.text[:100]
-        logger.info(f"Получено сообщение:{log_data}")
+        logger.info("Получено сообщение: %s", log_data)
         return await handler(event, data)
