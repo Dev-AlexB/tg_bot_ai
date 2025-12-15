@@ -14,8 +14,7 @@ class Video(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     creator_id: Mapped[str] = mapped_column(index=True)
     video_created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        index=True,
+        DateTime(timezone=True), index=True
     )
 
     views_count: Mapped[int]
@@ -48,8 +47,7 @@ class VideoSnapshot(Base):
     delta_reports_count: Mapped[int]
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        index=True,
+        DateTime(timezone=True), index=True
     )
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 

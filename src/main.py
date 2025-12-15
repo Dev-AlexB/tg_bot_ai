@@ -3,11 +3,12 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from config import config
+from config import settings
 from handlers.normal import router as normal_router
 from handlers.other import router as other_router
 from keyboards.menu import set_main_menu
 from middlewares.log import LoggingMiddleware
+from services.init_db import init_db
 
 
 logger = logging.getLogger(__name__)
@@ -15,12 +16,15 @@ logger = logging.getLogger(__name__)
 
 async def main():
     logging.basicConfig(
-        level=config.log.level,
-        format=config.log.format,
+        level=settings.log.level,
+        format=settings.log.format,
     )
 
+    logger.info("Initialising database...")
+    await init_db()
+
     logger.info("Starting bot...")
-    bot = Bot(token=config.bot.token)
+    bot = Bot(token=settings.bot.token)
     dp = Dispatcher()
 
     logger.info("Setting main menu...")

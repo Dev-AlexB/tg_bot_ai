@@ -41,4 +41,4 @@ class Config(BaseSettings):
     )
 
 
-config = Config()
+settings = Config()
