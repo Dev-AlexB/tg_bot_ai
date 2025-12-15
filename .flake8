@@ -1,4 +1,4 @@
 [flake8]
-extend-exclude = .venv,alembic,docker,.git,__pycache__
+extend-exclude = .venv,alembic,docker,.git,__pycache__,videos.json
 max-line-length = 79
 ignore = E203, E266, E501, W503, E704

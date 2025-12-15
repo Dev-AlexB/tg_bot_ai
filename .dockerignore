@@ -1,0 +1,12 @@
+./.*
+
+env_example
+README.md
+
+*.log
+*.tmp
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

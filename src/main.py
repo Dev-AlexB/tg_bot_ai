@@ -18,6 +18,7 @@ async def main():
     logging.basicConfig(
         level=settings.log.level,
         format=settings.log.format,
+        filename="logs/bot.log",
     )
 
     logger.info("Initialising database...")

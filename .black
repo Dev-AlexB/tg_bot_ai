@@ -6,5 +6,6 @@ extend-exclude = '''
     alembic,
     docker,
     .git,
-    __pycache__).
+    __pycache__,
+    videos.json).
 '''

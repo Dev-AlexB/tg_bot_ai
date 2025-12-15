@@ -1,4 +1,6 @@
 .venv
 .env
 .idea
+.postgres_data
+logs
 __pycache__

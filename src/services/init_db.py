@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import async_session, engine
-from models.models import Base, Video
+from models.models import Base, Video, VideoSnapshot
 
 
 JSON_FILE = "videos.json"
@@ -36,7 +36,7 @@ async def load_from_json(session: AsyncSession, json_file: str):
         video = Video(**video_data)
         for snap in snapshots_data:
             normalize_dt(snap)
-            video.snapshots.append(**snap)
+            video.snapshots.append(VideoSnapshot(**snap))
         session.add(video)
     await session.commit()
 
