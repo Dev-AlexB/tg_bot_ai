@@ -9,6 +9,7 @@ from handlers.other import router as other_router
 from keyboards.menu import set_main_menu
 from middlewares.log import LoggingMiddleware
 from services.init_db import init_db
+from services.llm.llm import OllamaLLMService
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,10 @@ async def main():
 
     logger.info("Including middlewares...")
     dp.message.middleware(LoggingMiddleware())
+
+    logger.info("Warming up LLM...")
+    llm = OllamaLLMService()
+    await llm.warmup()
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

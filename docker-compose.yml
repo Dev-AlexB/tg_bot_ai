@@ -25,6 +25,17 @@ services:
     networks:
       - app_network
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./.ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - app_network
+
   bot:
     build: .
     container_name: bot

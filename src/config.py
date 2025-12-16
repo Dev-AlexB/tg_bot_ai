@@ -29,10 +29,15 @@ class LoggSettings(BaseModel):
     format: str
 
 
+class LLMSettings(BaseModel):
+    url: str
+
+
 class Config(BaseSettings):
     bot: BotSettings
     postgres: DatabaseSettings
     log: LoggSettings
+    ollama: LLMSettings
 
     model_config = SettingsConfigDict(
         env_file=".env",

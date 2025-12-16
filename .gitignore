@@ -4,3 +4,4 @@
 .postgres_data
 logs
 __pycache__
+.ollama_data
