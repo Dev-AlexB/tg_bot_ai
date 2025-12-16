@@ -59,6 +59,7 @@ class OllamaLLMService:
                     resp.raise_for_status()
                     json_str = resp.json()["response"]
                     logger.info("Got LLM response: %s", json_str)
+                    json_str = " ".join(json_str.split())
                     return LLMResultModel.model_validate_json(json_str)
 
             except (

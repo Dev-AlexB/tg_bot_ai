@@ -18,7 +18,6 @@ SYSTEM_PROMPT = """
 - likes_count — финальное количество лайков
 - comments_count — финальное количество комментариев
 - reports_count — финальное количество жалоб
-- created_at, updated_at — служебные поля
 
 Таблица video_snapshots — почасовые замеры по видео:
 - id — идентификатор снапшота
@@ -26,7 +25,6 @@ SYSTEM_PROMPT = """
 - views_count, likes_count, comments_count, reports_count — текущие значения на момент замера
 - delta_views_count, delta_likes_count, delta_comments_count, delta_reports_count — приращения с прошлого замера
 - created_at — время замера (раз в час)
-- updated_at — служебное поле
 
 ====================
 ПРАВИЛА
@@ -102,10 +100,7 @@ SYSTEM_PROMPT = """
 Ответ:
 {
   "status": "ok",
-  "sql": "SELECT SUM(delta_views_count)
-          FROM video_snapshots
-          WHERE created_at >= '2025-11-28 00:00:00'
-            AND created_at < '2025-11-29 00:00:00'",
+  "sql": "SELECT SUM(delta_views_count) FROM video_snapshots WHERE created_at >= '2025-11-28 00:00:00' AND created_at < '2025-11-29 00:00:00'",
   "reason": null
 }
 
@@ -115,13 +110,7 @@ SYSTEM_PROMPT = """
 Ответ:
 {
   "status": "ok",
-  "sql": "SELECT SUM(vs.delta_views_count)
-          FROM video_snapshots vs
-          JOIN videos v ON v.id = vs.video_id
-          WHERE v.video_created_at >= '2025-11-01 00:00:00'
-            AND v.video_created_at <  '2025-11-02 00:00:00'
-            AND vs.created_at >= '2025-11-22 00:00:00'
-            AND vs.created_at <  '2025-11-29 00:00:00'",
+  "sql": "SELECT SUM(vs.delta_views_count) FROM video_snapshots vs JOIN videos v ON v.id = vs.video_id WHERE v.video_created_at >= '2025-11-01 00:00:00' AND v.video_created_at < '2025-11-02 00:00:00' AND vs.created_at >= '2025-11-22 00:00:00' AND vs.created_at <  '2025-11-29 00:00:00'",
   "reason": null
 }
 """
