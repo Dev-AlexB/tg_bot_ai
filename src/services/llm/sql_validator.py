@@ -37,7 +37,6 @@ class SqlValidator:
             exp.Delete,
             exp.Drop,
             exp.Alter,
-            exp.Join,
             exp.Union,
             exp.Subquery,
             exp.With,
