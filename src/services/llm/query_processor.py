@@ -26,7 +26,7 @@ class QueryProcessor:
         try:
             async with async_session() as session:
                 result = await session.execute(text(sql))
-                return result.scalar_one()
+                return result.scalar_one() or 0
         except Exception as e:
             raise SqlExecutionError(e) from e
 
@@ -35,7 +35,9 @@ class QueryProcessor:
             llm_result: LLMResultModel = await self.llm.interpret(question)
         except Exception as e:
             logger.error(
-                "LLM error", extra={"question": question, "error": str(e)}
+                "LLM error | question=%s | error=%s",
+                question,
+                e,
             )
             raise LLMError(e)
 
@@ -54,12 +56,10 @@ class QueryProcessor:
             )
 
         logger.info(
-            "SQL executed successfully",
-            extra={
-                "question": question,
-                "sql": llm_result.sql,
-                "value": value,
-            },
+            "SQL executed successfully | question=%s | SQL=%s | value=%s",
+            question,
+            llm_result.sql,
+            value,
         )
 
         return str(value)
@@ -74,21 +74,26 @@ class QueryProcessor:
             except (SqlValidationError, InvalidSqlResultError) as e:
                 last_error = e
                 logger.warning(
-                    f"[Attempt {attempt}] Invalid LLM output",
-                    extra={"question": question, "error": str(e)},
+                    "[Attempt %d] Invalid LLM output | question=%s | error=%s",
+                    attempt,
+                    question,
+                    e,
                 )
                 continue
 
             except LLMError as e:
                 last_error = e
                 logger.warning(
-                    f"[Attempt {attempt}] LLM failure",
-                    extra={"question": question, "error": str(e)},
+                    "[Attempt %d] LLM failure | question=%s | error=%s",
+                    attempt,
+                    question,
+                    e,
                 )
                 continue
 
         logger.error(
-            "All retries exhausted",
-            extra={"question": question, "error": str(last_error)},
+            "All retries exhausted | question=%s | error=%s",
+            question,
+            last_error,
         )
         raise last_error

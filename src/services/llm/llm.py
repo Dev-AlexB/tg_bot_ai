@@ -58,7 +58,7 @@ class OllamaLLMService:
                     )
                     resp.raise_for_status()
                     json_str = resp.json()["response"]
-                    logger.info(f"Got LLM response {json_str}")
+                    logger.info("Got LLM response: %s", json_str)
                     return LLMResultModel.model_validate_json(json_str)
 
             except (
@@ -66,15 +66,21 @@ class OllamaLLMService:
                 httpx.RequestError,
                 httpx.TimeoutException,
             ) as e:
-                logger.warning(f"[Attempt {attempt}] HTTP/network error: {e}")
+                logger.warning(
+                    "[Attempt %d] HTTP/network error: %s",
+                    attempt,
+                    e,
+                )
             except Exception as e:
                 logger.warning(
-                    f"[Attempt {attempt}] Invalid LLM response: {e}"
+                    "[Attempt %d] Invalid LLM response: %s",
+                    attempt,
+                    e,
                 )
 
             if attempt < retries:
                 sleep_time = backoff * attempt
-                logger.info(f"Retrying after {sleep_time:.1f}s...")
+                logger.info("Retrying after %ds...", sleep_time)
                 await asyncio.sleep(sleep_time)
 
         raise RuntimeError(
