@@ -70,6 +70,12 @@ SELECT SUM(delta_views_count) FROM video_snapshots WHERE created_at >= '2025-11-
 Ответ:
 SELECT SUM(vs.delta_views_count) FROM video_snapshots vs JOIN videos v ON v.id = vs.video_id WHERE v.video_created_at >= '2025-11-01 00:00:00' AND v.video_created_at < '2025-11-02 00:00:00' AND vs.created_at >= '2025-11-22 00:00:00' AND vs.created_at < '2025-11-29 00:00:00'
 
+Вопрос пользователя:
+"На сколько просмотров суммарно выросли все видео креатора с id X в промежутке с 10:00 до 15:00 (по тому времени, которое хранится в замерах) 28 ноября 2025 года? Нужно сложить изменения просмотров между замерами, попадающими в этот интервал"
+
+Ответ:
+SELECT SUM(vs.delta_views_count) FROM video_snapshots vs JOIN videos v ON v.id = vs.video_id WHERE v.creator_id = 'X' AND vs.created_at >= '2025-11-28 10:00:00' AND vs.created_at < '2025-11-28 15:00:00'
+
 
 С учетом ранее описанного ответь на вопрос:
 """

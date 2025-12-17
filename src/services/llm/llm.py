@@ -11,7 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 class OllamaLLMService:
-    def __init__(self, model: str = "qwen2.5:3b", base_url: str | None = None):
+    def __init__(
+        self, model: str = "qwen2.5-coder:3b", base_url: str | None = None
+    ):
         self.model = model
         self.base_url = base_url or settings.ollama.url
         self.url = f"{self.base_url}/api/generate"
