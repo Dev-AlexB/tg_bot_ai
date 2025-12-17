@@ -53,7 +53,13 @@ class QueryProcessor:
             raise ResponseValidationError(e)
 
         if llm_result.status != "ok":
-            raise LLMError(llm_result.reason or "LLM cannot generate SQL")
+            reason = llm_result.reason or "LLM cannot generate SQL"
+            logger.warning(
+                "LLM can't answer question: %s. Reason: %s",
+                question,
+                reason,
+            )
+            raise LLMError(reason)
 
         self.validator.validate(llm_result.sql)
 
@@ -88,7 +94,7 @@ class QueryProcessor:
                 logger.warning(
                     "[Attempt %d] Invalid SQL in LLM output | question=%s | error=%s",
                     attempt,
-                    question,
+                    question + comment,
                     e,
                 )
             except ResponseValidationError as e:
@@ -100,13 +106,13 @@ class QueryProcessor:
                 logger.warning(
                     "[Attempt %d] Invalid JSON in LLM output | question=%s | error=%s",
                     attempt,
-                    question,
+                    question + comment,
                     e,
                 )
 
         logger.error(
             "All retries exhausted | question=%s | error=%s",
-            question,
+            question + comment,
             last_error,
         )
         raise last_error

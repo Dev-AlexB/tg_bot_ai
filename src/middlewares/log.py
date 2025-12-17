@@ -9,11 +9,10 @@ logger = logging.getLogger(__name__)
 
 class LoggingMiddleware(BaseMiddleware):
     async def __call__(self, handler, event: Message, data):
-        log_data = {
-            "user_id": event.from_user.id,
-            "type": event.content_type,
-        }
-        if event.text:
-            log_data["text"] = event.text[:100]
-        logger.info("Получено сообщение: %s", log_data)
+        logger.info(
+            "\nMessage from user: %s, %s, message text:\n%s\n",
+            event.from_user.id,
+            event.content_type,
+            event.text,
+        )
         return await handler(event, data)
