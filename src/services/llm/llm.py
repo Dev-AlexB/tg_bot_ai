@@ -5,7 +5,6 @@ import httpx
 
 from config import settings
 from services.llm.prompt import SYSTEM_PROMPT
-from services.llm.schema import LLMResultModel
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ class OllamaLLMService:
 
     async def interpret(
         self, question: str, retries: int = 3, backoff: float = 2.0
-    ) -> LLMResultModel:
+    ) -> str:
         full_prompt = SYSTEM_PROMPT + f"\nВопрос пользователя: {question}"
         attempt = 0
         while attempt < retries:
@@ -59,8 +58,7 @@ class OllamaLLMService:
                     resp.raise_for_status()
                     json_str = resp.json()["response"]
                     logger.info("Got LLM response: %s", json_str)
-                    json_str = " ".join(json_str.split())
-                    return LLMResultModel.model_validate_json(json_str)
+                    return " ".join(json_str.split())
 
             except (
                 httpx.HTTPStatusError,
@@ -85,5 +83,5 @@ class OllamaLLMService:
                 await asyncio.sleep(sleep_time)
 
         raise RuntimeError(
-            f"LLM can't return valid result after {retries} retries"
+            f"LLM can't return response after {retries} retries"
         )

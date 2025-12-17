@@ -2,6 +2,10 @@ class LLMError(Exception):
     pass
 
 
+class ResponseValidationError(Exception):
+    pass
+
+
 class SqlValidationError(Exception):
     pass
 

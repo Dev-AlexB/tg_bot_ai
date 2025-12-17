@@ -6,6 +6,7 @@ from db.database import async_session
 from errors.errors import (
     InvalidSqlResultError,
     LLMError,
+    ResponseValidationError,
     SqlExecutionError,
     SqlValidationError,
 )
@@ -32,7 +33,7 @@ class QueryProcessor:
 
     async def _process_once(self, question: str) -> str:
         try:
-            llm_result: LLMResultModel = await self.llm.interpret(question)
+            json_str: str = await self.llm.interpret(question)
         except Exception as e:
             logger.error(
                 "LLM error | question=%s | error=%s",
@@ -41,10 +42,18 @@ class QueryProcessor:
             )
             raise LLMError(e)
 
-        if llm_result.status != "ok":
-            raise SqlValidationError(
-                llm_result.reason or "LLM cannot generate SQL"
+        try:
+            llm_result = LLMResultModel.model_validate_json(json_str)
+        except Exception as e:
+            logger.error(
+                "LLM response validation error | question=%s | error=%s",
+                question,
+                e,
             )
+            raise ResponseValidationError(e)
+
+        if llm_result.status != "ok":
+            raise LLMError(llm_result.reason or "LLM cannot generate SQL")
 
         self.validator.validate(llm_result.sql)
 
@@ -66,30 +75,34 @@ class QueryProcessor:
 
     async def process(self, question: str) -> str:
         last_error = None
-
+        comment = ""
         for attempt in range(1, 4):
             try:
-                return await self._process_once(question)
-
+                return await self._process_once(question + comment)
             except (SqlValidationError, InvalidSqlResultError) as e:
                 last_error = e
+                comment = (
+                    "\nПредыдущий твой ответ был некорректным. "
+                    "Попробуй сгенерировать новый SQL."
+                )
                 logger.warning(
-                    "[Attempt %d] Invalid LLM output | question=%s | error=%s",
+                    "[Attempt %d] Invalid SQL in LLM output | question=%s | error=%s",
                     attempt,
                     question,
                     e,
                 )
-                continue
-
-            except LLMError as e:
+            except ResponseValidationError as e:
                 last_error = e
+                comment = (
+                    "\nПрошлый ответ был невалидным JSON. "
+                    "Формат ответа должен быть валидным JSON."
+                )
                 logger.warning(
-                    "[Attempt %d] LLM failure | question=%s | error=%s",
+                    "[Attempt %d] Invalid JSON in LLM output | question=%s | error=%s",
                     attempt,
                     question,
                     e,
                 )
-                continue
 
         logger.error(
             "All retries exhausted | question=%s | error=%s",
