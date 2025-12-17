@@ -37,7 +37,7 @@ class OllamaLLMService:
     async def interpret(
         self, question: str, retries: int = 3, backoff: float = 2.0
     ) -> str:
-        full_prompt = SYSTEM_PROMPT + f"\nВопрос пользователя: {question}"
+        full_prompt = SYSTEM_PROMPT + question
         attempt = 0
         while attempt < retries:
             attempt += 1
@@ -56,9 +56,9 @@ class OllamaLLMService:
                         },
                     )
                     resp.raise_for_status()
-                    json_str = resp.json()["response"]
-                    logger.info("Got LLM response: %s", json_str)
-                    return " ".join(json_str.split())
+                    sql_string = resp.json()["response"]
+                    logger.info("Got LLM response: %s", sql_string)
+                    return " ".join(sql_string.split())
 
             except (
                 httpx.HTTPStatusError,
@@ -72,7 +72,7 @@ class OllamaLLMService:
                 )
             except Exception as e:
                 logger.warning(
-                    "[Attempt %d] Invalid LLM response: %s",
+                    "[Attempt %d] Unpredicted error: %s",
                     attempt,
                     e,
                 )

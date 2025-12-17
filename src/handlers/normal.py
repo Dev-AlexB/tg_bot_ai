@@ -29,6 +29,4 @@ async def process_request(message: Message):
         await message.answer(value)
 
     except Exception:
-        await message.answer(
-            "Не удалось обработать запрос. Попробуйте переформулировать."
-        )
+        await message.answer("Не удалось обработать запрос.")
